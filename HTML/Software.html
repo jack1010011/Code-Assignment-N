@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Asistencia y Notas</title>
+  <link href="../CSS/Software.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../lib/FontAwesome/fontawesome/web-fonts-with-css/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../lib/bootstrap-4.0.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark text-center text-uppercase">
+    <a class="navbar-brand" href="#">Neustar Code Assignment</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false"
+      aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+  </nav>
+  <div class="py-5 ">
+    <div class="container ">
+      <div class="row">
+        <div class="col-md-12 ">
+          <table id="example" class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Project Description:</th>
+                <th scope="col">Each line of the file has a category, a space and a sub-category. </th>
+              </tr>
+              <tr>
+                <th></th>
+                <th scope="col">Select the book database file to review.
+                  <input type="file" id="fileinput" name="files[]" multiple />
+                  <output id="list"></output>
+                </th>
+                <tr>
+            </thead>
+            <tbody>
+              <tr data-toggle="modal" data-target="#AddModal">
+                <td>
+                  <a target="#AddModal" class="btn btn-primary " role="button">Click here to add a new entry</a>
+                </td>
+              </tr>
+              <tr data-toggle="modal" data-target="#ViewModal">
+                <td>
+                  <a target="#ViewModal" class="btn btn-primary " role="button">Click here to view the full list </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!--Read passed file-->
+  <script type="text/javascript">
+    function readSingleFile(evt) {
+      //Retrieve the first (and only!) File from the FileList object
+      var f = evt.target.files[0];
+
+      if (f) {
+        var r = new FileReader();
+        r.onload = function (e) {
+          var contents = e.target.result;
+
+
+
+          //Normalize Table Process
+          var Cate = []; Line = false; var Output = ""; var Output2 = "";
+          var i; var word = "", sentence = ""; var LastCat = "";
+
+
+          var PERSON = [];
+          var PLACE = [];
+          var ANIMAL = [];
+          var COMPUTER = [];
+          var OTHER = [];
+
+
+          for (i = 0; i < contents.length; i++) {
+            word += contents[i];
+
+            //New Line
+            if (contents[i].charCodeAt(0) <= 32 && Line == true) {    //alert("Linea encontrada: " + sentence.trim());
+              Output += sentence.trim() + "<br>";
+              if (sentence.trim().includes("PERSON")) { var r = sentence.trim().replace("PERSON", ""); PERSON.push(r); }
+              if (sentence.trim().includes("PLACE")) { var r = sentence.trim().replace('PLACE', ' '); PLACE.push(r); }
+              if (sentence.trim().includes("ANIMAL")) { var r = sentence.trim().replace('ANIMAL', ' '); ANIMAL.push(r); }
+              if (sentence.trim().includes("COMPUTER")) { var r = sentence.trim().replace('COMPUTER', ' '); COMPUTER.push(r); }
+              if (sentence.trim().includes("OTHER")) { var r = sentence.trim().replace('OTHER', ' '); OTHER.push(r); }
+              sentence = "";
+              Line = false;
+            }
+            Line = false;
+
+
+            //if space
+            if (contents[i].charCodeAt(0) <= 32) {
+              if (word.trim() != "") {
+                sentence += word + " "; Line = true; word = "";
+              }
+            }
+            var Lastletter = contents[i];
+          }
+
+
+          //Get unique 
+          var uniqueNames = []; var Output2 = "";
+          $.each(PERSON, function (i, el) { if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el); });
+          Output2 += "PERSON (" + (uniqueNames.length) + ") = " + uniqueNames + " <br>";
+          var uniqueNames = [];
+          $.each(PLACE, function (i, el) { if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el); });
+          Output2 += "PLACE (" + (uniqueNames.length) + ") = " + uniqueNames + " <br>";
+          var uniqueNames = [];
+          $.each(ANIMAL, function (i, el) { if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el); });
+          Output2 += "ANIMAL (" + (uniqueNames.length) + ") = " + uniqueNames + " <br>";
+          var uniqueNames = [];
+          $.each(COMPUTER, function (i, el) { if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el); });
+          Output2 += "COMPUTER (" + (uniqueNames.length) + ") = " + uniqueNames + " <br>";
+          var uniqueNames = [];
+          $.each(OTHER, function (i, el) { if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el); });
+          Output2 += "OTHER (" + (uniqueNames.length) + ") = " + uniqueNames + " <br><br>";
+
+          alert("Done");
+
+
+
+
+          //Print
+          document.getElementById("description").innerHTML = Output;
+          document.getElementById("amount").innerHTML = Output2;
+
+        }
+        r.readAsText(f);
+      } else { alert("Failed to load file"); }
+    }
+    document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
+  </script>
+
+
+
+
+
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Values</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th scope="col">State</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr>
+                <td>PERSON</td>
+                <td>
+                  <div class="form-group">
+                    <input name="Person" type="text" class="form-control" placeholder="Enter a new name...">
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>PLACE</td>
+                <td>
+                  <div class="form-group">
+                    <input name="Place" type="text" class="form-control" placeholder="Enter a new place...">
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>ANIMAL</td>
+                <td>
+                  <div class="form-group">
+                    <input name="Animal" type="text" class="form-control" placeholder="Enter a new animal...">
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>COMPUTER</td>
+                <td>
+                  <div class="form-group">
+                    <input name="Computer" type="text" class="form-control" placeholder="Enter a new computer...">
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td> <input name="Other1" type="text" class="form-control" placeholder="OTHER"></td>
+                <td>
+                  <div class="form-group">
+                    <input name="Other2" type="text" class="form-control" placeholder="Enter a new value...">
+                  </div>
+                </td>
+              </tr>
+
+
+
+        </div>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="ViewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Full List - Output</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">CATEGORY</th>
+                <th scope="col">COUNT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="description"></td>
+                <td>
+                  <div id="amount" class="form-group">
+                  </div>
+                </td>
+              </tr>
+              <tbody>
+                <tr>
+        </div>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  <script src="../lib/JQuery/jquery-3.3.1.min.js"></script>
+  <script src="../JavaScript/Software.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
